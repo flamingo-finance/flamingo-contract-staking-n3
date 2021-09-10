@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Neo.SmartContract.Framework" Version="3.0.0-rc3" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="FLM.Transfer" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Properties\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="FLMMIX.cs" />
+    <Compile Remove="TestDeploy.cs" />
+  </ItemGroup>
+</Project>
