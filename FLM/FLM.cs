@@ -3,6 +3,7 @@ using System.Numerics;
 using Neo;
 using Neo.SmartContract;
 using Neo.SmartContract.Framework;
+using Neo.SmartContract.Framework.Attributes;
 
 namespace flamingo_contract_staking
 {

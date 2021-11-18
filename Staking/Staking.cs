@@ -2,6 +2,7 @@
 using System.Numerics;
 using Neo;
 using Neo.SmartContract.Framework;
+using Neo.SmartContract.Framework.Attributes;
 using Neo.SmartContract.Framework.Services;
 
 namespace FLMStaking
@@ -33,8 +34,11 @@ namespace FLMStaking
             BigInteger currentTimeStamp = GetCurrentTimestamp();
             Assert(CheckIfStakingStart(currentTimeStamp), "OnNEP17Payment: Timeout");
             BigInteger currentProfit = 0;
+
             UpdateStackRecord(asset, currentTimeStamp);
+
             StakingReocrd stakingRecord = UserStakingStorage.Get(from, asset);
+
             if (stakingRecord.assetId != UInt160.Zero && stakingRecord.fromAddress != UInt160.Zero)
             {
                 currentProfit = SettleProfit(stakingRecord.timeStamp, stakingRecord.amount, asset) + stakingRecord.Profit;
