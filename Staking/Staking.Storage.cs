@@ -8,6 +8,19 @@ namespace FLMStaking
 {
     partial class FLMStaking
     {
+        public static class EnteredStorage
+        {
+            public static readonly string mapName = "entered";
+
+            public static void Put(BigInteger value) => new StorageMap(Storage.CurrentContext, mapName).Put(mapName, value);
+
+            public static BigInteger Get()
+            {
+                var value = new StorageMap(Storage.CurrentContext, mapName).Get(mapName);
+                return value is null ? 0 : (BigInteger)value;
+            }
+        }
+
         public static class OwnerStorage
         {
             private static readonly byte[] ownerPrefix = new byte[] { 0x03, 0x02 };

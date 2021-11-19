@@ -59,6 +59,10 @@ namespace FLMStaking
 
         public static bool Refund(UInt160 fromAddress, BigInteger amount, UInt160 asset)
         {
+            //检查是否存在reentered的情况
+            Assert(EnteredStorage.Get() == 0, "Re-entered");
+            EnteredStorage.Put(1);
+
             if (IsRefundPaused()) return false;
             //提现检查
             if (!Runtime.CheckWitness(fromAddress)) return false;
@@ -83,6 +87,7 @@ namespace FLMStaking
             //收益结算
             BigInteger currentProfit = SettleProfit(stakingRecord.timeStamp, stakingRecord.amount, asset) + stakingRecord.Profit;
             UserStakingStorage.Put(fromAddress, remainAmount, asset, currentTimestamp, currentProfit);
+            EnteredStorage.Put(0);
             return true;
         }
 
