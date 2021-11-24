@@ -40,7 +40,7 @@ namespace FLMStaking
         {
             UInt160 selfAddress = Runtime.ExecutingScriptHash;
             var @params = new object[] { selfAddress };
-            BigInteger totalAmount = (BigInteger)Contract.Call(assetId, "balanceOf", CallFlags.All, @params);
+            BigInteger totalAmount = (BigInteger)Contract.Call(assetId, "balanceOf", CallFlags.ReadOnly, @params);
             return totalAmount;
         }
 

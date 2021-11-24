@@ -11,6 +11,7 @@ namespace FLMStaking
         [Safe]
         public static bool IsInWhiteList(UInt160 asset)
         {
+            Assert(CheckAddrVaild(asset), "IsInWhiteList: invald params");
             return AssetStorage.Get(asset);
         }
 
@@ -29,6 +30,7 @@ namespace FLMStaking
 
         public static bool AddAsset(UInt160 asset, UInt160 author)
         {
+            Assert(CheckAddrVaild(asset, author), "AddAsset: invald params");
             Assert(Runtime.CheckWitness(author), "AddAsset: CheckWitness failed, author-".ToByteArray().Concat(author).ToByteString());
             Assert(IsAuthor(author), "AddAsset: not author-".ToByteArray().Concat(author).ToByteString());
             AssetStorage.Put(asset);

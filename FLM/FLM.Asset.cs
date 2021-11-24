@@ -21,10 +21,18 @@ namespace flamingo_contract_staking
         public static BigInteger TotalSupply() => TotalSupplyStorage.Get();
 
         [Safe]
-        public static BigInteger BalanceOf(UInt160 usr) => BalanceStorage.Get(usr);
+        public static BigInteger BalanceOf(UInt160 usr)
+        {
+            Assert(CheckAddrVaild(usr), "BalanceOf: invalid usr, usr-".ToByteArray().Concat(usr).ToByteString());
+            return BalanceStorage.Get(usr);
+        }
 
         [Safe]
-        public static BigInteger Allowance(UInt160 usr, UInt160 spender) => AllowanceStorage.Get(usr, spender);
+        public static BigInteger Allowance(UInt160 usr, UInt160 spender)
+        {
+            Assert(CheckAddrVaild(usr, spender), "Allowance: invalid usr or spender, usr-".ToByteArray().Concat(usr).Concat("and spender-".ToByteArray()).Concat(spender).ToByteString());
+            return AllowanceStorage.Get(usr, spender);
+        }
 
         public static bool Approve(UInt160 usr, UInt160 spender, BigInteger amount)
         {
@@ -32,7 +40,7 @@ namespace flamingo_contract_staking
             Assert(amount > 0, "approve: invalid amount-".ToByteArray().Concat(amount.ToByteArray()).ToByteString());
             Assert(Runtime.CheckWitness(usr) || usr.Equals(Runtime.CallingScriptHash), "approve: CheckWitness failed, usr-".ToByteArray().Concat(usr).ToByteString());
             if (spender.Equals(usr)) return true;
-            AllowanceStorage.Put(usr, spender, amount);
+            AllowanceStorage.Increase(usr, spender, amount);
             OnApprove(usr, spender, amount);
             return true;
         }

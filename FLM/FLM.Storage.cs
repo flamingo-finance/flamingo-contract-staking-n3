@@ -95,6 +95,13 @@ namespace flamingo_contract_staking
                 allowanceMap.Delete(usr + spender);
             }
 
+            internal static bool Increase(UInt160 usr, UInt160 spender, BigInteger delta)
+            {
+                BigInteger allowance = Get(usr, spender);
+                Put(usr, spender, allowance + delta);
+                return true;
+            }
+
             internal static bool Reduce(UInt160 usr, UInt160 spender, BigInteger delta)
             {
                 BigInteger allowance = Get(usr, spender);

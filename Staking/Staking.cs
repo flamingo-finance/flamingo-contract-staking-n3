@@ -93,6 +93,7 @@ namespace FLMStaking
 
         public static bool ClaimFLM(UInt160 fromAddress, UInt160 asset)
         {
+            Assert(CheckAddrVaild(fromAddress, asset), "ClaimFLM: invald params");
             UInt160 selfAddress = Runtime.ExecutingScriptHash;
             if (IsPaused()) return false;
             if (!Runtime.CheckWitness(fromAddress)) return false;
@@ -117,6 +118,7 @@ namespace FLMStaking
 
         public static BigInteger CheckFLM(UInt160 fromAddress, UInt160 asset)
         {
+            Assert(CheckAddrVaild(fromAddress, asset), "CheckFLM: invald params");
             StakingReocrd stakingRecord = UserStakingStorage.Get(fromAddress, asset);
             UpdateStackRecord(asset, GetCurrentTimestamp());
             BigInteger newProfit = SettleProfit(stakingRecord.timeStamp, stakingRecord.amount, asset);
@@ -124,8 +126,10 @@ namespace FLMStaking
             return profitAmount;
         }
 
+        [Safe]
         public static BigInteger GetStakingAmount(UInt160 fromAddress, UInt160 asset)
         {
+            Assert(CheckAddrVaild(fromAddress, asset), "GetStakingAmount: invald params");
             return UserStakingStorage.Get(fromAddress, asset).amount;
         }
 
