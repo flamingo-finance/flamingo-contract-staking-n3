@@ -81,7 +81,7 @@ namespace flamingo_contract_staking
             Assert(Runtime.CheckWitness(minter) || minter.Equals(Runtime.CallingScriptHash), "mint: CheckWitness failed, author-".ToByteArray().Concat(minter).ToByteString());
 
             amount = amount / ConvertDecimal;
-            TransferInternal(UInt160.Zero, UInt160.Zero, receiver, amount);
+            TransferInternal(UInt160.Zero, receiver, amount);
             return true;
         }
 

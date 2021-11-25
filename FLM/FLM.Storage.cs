@@ -73,55 +73,6 @@ namespace flamingo_contract_staking
             }
         }
 
-        public static class AllowanceStorage
-        {
-            private static readonly byte[] AllowancePrefix = new byte[] { 0x01, 0x02 };
-
-            internal static void Put(UInt160 usr, UInt160 spender, BigInteger amount)
-            {
-                StorageMap allowanceMap = new(Storage.CurrentContext, AllowancePrefix);
-                allowanceMap.Put(usr + spender, amount);
-            }
-
-            internal static BigInteger Get(UInt160 usr, UInt160 spender)
-            {
-                StorageMap allowanceMap = new(Storage.CurrentReadOnlyContext, AllowancePrefix);
-                return (BigInteger)allowanceMap.Get(usr + spender);
-            }
-
-            internal static void Delete(UInt160 usr, UInt160 spender)
-            {
-                StorageMap allowanceMap = new(Storage.CurrentContext, AllowancePrefix);
-                allowanceMap.Delete(usr + spender);
-            }
-
-            internal static bool Increase(UInt160 usr, UInt160 spender, BigInteger delta)
-            {
-                BigInteger allowance = Get(usr, spender);
-                Put(usr, spender, allowance + delta);
-                return true;
-            }
-
-            internal static bool Decrease(UInt160 usr, UInt160 spender, BigInteger delta)
-            {
-                BigInteger allowance = Get(usr, spender);
-                if (allowance < delta)
-                {
-                    return false;
-                }
-                else if (allowance == delta)
-                {
-                    Delete(usr, spender);
-                }
-                else
-                {
-                    Put(usr, spender, allowance - delta);
-                }
-                return true;
-            }
-
-        }
-
         public static class AuthorStorage
         {
             private static readonly byte[] AuthorPrefix = new byte[] { 0x01, 0x03 };

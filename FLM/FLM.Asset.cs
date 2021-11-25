@@ -27,54 +27,18 @@ namespace flamingo_contract_staking
             return BalanceStorage.Get(usr);
         }
 
-        [Safe]
-        public static BigInteger Allowance(UInt160 usr, UInt160 spender)
-        {
-            Assert(CheckAddrValid(true, usr, spender), "Allowance: invalid usr or spender, usr-".ToByteArray().Concat(usr).Concat("and spender-".ToByteArray()).Concat(spender).ToByteString());
-            return AllowanceStorage.Get(usr, spender);
-        }
-
-        public static bool Approve(UInt160 usr, UInt160 spender, BigInteger amount)
-        {
-            Assert(CheckAddrValid(true, usr, spender), "approve: invalid usr or spender, usr-".ToByteArray().Concat(usr).Concat("and spender-".ToByteArray()).Concat(spender).ToByteString());
-            Assert(Runtime.CheckWitness(usr) || usr.Equals(Runtime.CallingScriptHash), "approve: CheckWitness failed, usr-".ToByteArray().Concat(usr).ToByteString());
-            if (spender.Equals(usr)) return true;
-            if(amount >= 0)
-            {
-                AllowanceStorage.Increase(usr, spender, amount);
-            }
-            else
-            {
-                AllowanceStorage.Decrease(usr, spender, -amount);
-            }
-            OnApprove(usr, spender, amount);
-            return true;
-        }
-
         public static bool Transfer(UInt160 from, UInt160 to, BigInteger amount, object data = null)
         {
             Assert(CheckAddrValid(true, from, to), "transfer: invalid from or to, owner-".ToByteArray().Concat(from).Concat("and to-".ToByteArray()).Concat(to).ToByteString());
             Assert(Runtime.CheckWitness(from) || from.Equals(Runtime.CallingScriptHash), "transfer: CheckWitness failed, from-".ToByteArray().Concat(from).ToByteString());
-            return TransferInternal(from, from, to, amount, data);
+            return TransferInternal(from, to, amount, data);
         }
 
-        public static bool TransferFrom(UInt160 spender, UInt160 from, UInt160 to, BigInteger amount, object data = null)
-        {
-            Assert(CheckAddrValid(true, spender, from, to), "transferFrom: invalid spender or from or to, spender-".ToByteArray().Concat(spender).Concat("and from-".ToByteArray()).Concat(from).Concat("and to-".ToByteArray()).Concat(to).ToByteString());
-            Assert(Runtime.CheckWitness(spender) || from.Equals(Runtime.CallingScriptHash), "transfer: CheckWitness failed, from-".ToByteArray().Concat(from).ToByteString());
-            return TransferInternal(spender, from, to, amount, data);
-        }
-
-        private static bool TransferInternal(UInt160 spender, UInt160 from, UInt160 to, BigInteger amount, object data = null)
+        private static bool TransferInternal(UInt160 from, UInt160 to, BigInteger amount, object data = null)
         {
             Assert(amount >= 0, "transferInternal: invalid amount-".ToByteArray().Concat(amount.ToByteArray()).ToByteString());
 
             bool result = true;
-            if (spender != from)
-            {
-                result = AllowanceStorage.Decrease(from, spender, amount);
-                Assert(result, "transferInternal:invalid allowance-".ToByteArray().Concat(amount.ToByteArray()).ToByteString());
-            }
             if (from != UInt160.Zero && amount != 0)
             {
                 result = BalanceStorage.Reduce(from, amount);
