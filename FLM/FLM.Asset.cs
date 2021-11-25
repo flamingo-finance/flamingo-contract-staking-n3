@@ -23,38 +23,44 @@ namespace flamingo_contract_staking
         [Safe]
         public static BigInteger BalanceOf(UInt160 usr)
         {
-            Assert(CheckAddrVaild(usr), "BalanceOf: invalid usr, usr-".ToByteArray().Concat(usr).ToByteString());
+            Assert(CheckAddrValid(true, usr), "BalanceOf: invalid usr, usr-".ToByteArray().Concat(usr).ToByteString());
             return BalanceStorage.Get(usr);
         }
 
         [Safe]
         public static BigInteger Allowance(UInt160 usr, UInt160 spender)
         {
-            Assert(CheckAddrVaild(usr, spender), "Allowance: invalid usr or spender, usr-".ToByteArray().Concat(usr).Concat("and spender-".ToByteArray()).Concat(spender).ToByteString());
+            Assert(CheckAddrValid(true, usr, spender), "Allowance: invalid usr or spender, usr-".ToByteArray().Concat(usr).Concat("and spender-".ToByteArray()).Concat(spender).ToByteString());
             return AllowanceStorage.Get(usr, spender);
         }
 
         public static bool Approve(UInt160 usr, UInt160 spender, BigInteger amount)
         {
-            Assert(CheckAddrVaild(usr, spender), "approve: invalid usr or spender, usr-".ToByteArray().Concat(usr).Concat("and spender-".ToByteArray()).Concat(spender).ToByteString());
-            Assert(amount > 0, "approve: invalid amount-".ToByteArray().Concat(amount.ToByteArray()).ToByteString());
+            Assert(CheckAddrValid(true, usr, spender), "approve: invalid usr or spender, usr-".ToByteArray().Concat(usr).Concat("and spender-".ToByteArray()).Concat(spender).ToByteString());
             Assert(Runtime.CheckWitness(usr) || usr.Equals(Runtime.CallingScriptHash), "approve: CheckWitness failed, usr-".ToByteArray().Concat(usr).ToByteString());
             if (spender.Equals(usr)) return true;
-            AllowanceStorage.Increase(usr, spender, amount);
+            if(amount >= 0)
+            {
+                AllowanceStorage.Increase(usr, spender, amount);
+            }
+            else
+            {
+                AllowanceStorage.Decrease(usr, spender, -amount);
+            }
             OnApprove(usr, spender, amount);
             return true;
         }
 
         public static bool Transfer(UInt160 from, UInt160 to, BigInteger amount, object data = null)
         {
-            Assert(CheckAddrVaild(from, to), "transfer: invalid from or to, owner-".ToByteArray().Concat(from).Concat("and to-".ToByteArray()).Concat(to).ToByteString());
+            Assert(CheckAddrValid(true, from, to), "transfer: invalid from or to, owner-".ToByteArray().Concat(from).Concat("and to-".ToByteArray()).Concat(to).ToByteString());
             Assert(Runtime.CheckWitness(from) || from.Equals(Runtime.CallingScriptHash), "transfer: CheckWitness failed, from-".ToByteArray().Concat(from).ToByteString());
             return TransferInternal(from, from, to, amount, data);
         }
 
         public static bool TransferFrom(UInt160 spender, UInt160 from, UInt160 to, BigInteger amount, object data = null)
         {
-            Assert(CheckAddrVaild(spender, from, to), "transferFrom: invalid spender or from or to, spender-".ToByteArray().Concat(spender).Concat("and from-".ToByteArray()).Concat(from).Concat("and to-".ToByteArray()).Concat(to).ToByteString());
+            Assert(CheckAddrValid(true, spender, from, to), "transferFrom: invalid spender or from or to, spender-".ToByteArray().Concat(spender).Concat("and from-".ToByteArray()).Concat(from).Concat("and to-".ToByteArray()).Concat(to).ToByteString());
             Assert(Runtime.CheckWitness(spender) || from.Equals(Runtime.CallingScriptHash), "transfer: CheckWitness failed, from-".ToByteArray().Concat(from).ToByteString());
             return TransferInternal(spender, from, to, amount, data);
         }
@@ -66,7 +72,7 @@ namespace flamingo_contract_staking
             bool result = true;
             if (spender != from)
             {
-                result = AllowanceStorage.Reduce(from, spender, amount);
+                result = AllowanceStorage.Decrease(from, spender, amount);
                 Assert(result, "transferInternal:invalid allowance-".ToByteArray().Concat(amount.ToByteArray()).ToByteString());
             }
             if (from != UInt160.Zero && amount != 0)

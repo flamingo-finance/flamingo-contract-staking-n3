@@ -102,7 +102,7 @@ namespace flamingo_contract_staking
                 return true;
             }
 
-            internal static bool Reduce(UInt160 usr, UInt160 spender, BigInteger delta)
+            internal static bool Decrease(UInt160 usr, UInt160 spender, BigInteger delta)
             {
                 BigInteger allowance = Get(usr, spender);
                 if (allowance < delta)
@@ -203,12 +203,6 @@ namespace flamingo_contract_staking
                 {
                     return (UInt160)v;
                 }
-            }
-
-            internal static void Delete()
-            {
-                StorageMap map = new(Storage.CurrentContext, ownerPrefix);
-                map.Delete("owner");
             }
         }
 

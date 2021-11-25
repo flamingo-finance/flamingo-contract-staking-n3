@@ -20,8 +20,6 @@ namespace flamingo_contract_staking
         [InitialValue("00000040eaed7446d09c2c9f0c", ContractParameterType.ByteArray)]
         private static readonly BigInteger ConvertDecimal;
 
-        private static readonly string magic = "3";
-
         [Safe]
         public static string Name() => "Flamingo";
 
@@ -30,15 +28,5 @@ namespace flamingo_contract_staking
 
         [Safe]
         public static byte Decimals() => 8;
-
-        public static void OnNEP17Payment(UInt160 from, BigInteger amount, object data)
-        {
-            throw new Exception("Payment is disable on this contract!");
-        }
-
-        public static void _deploy(byte[] data,bool b)
-        {
-
-        }
     }
 }

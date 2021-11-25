@@ -8,13 +8,6 @@
     <PackageReference Include="Neo.SmartContract.Framework" Version="3.1.0" />
   </ItemGroup>
   <ItemGroup>
-    <None Remove="FLM.Transfer" />
-  </ItemGroup>
-  <ItemGroup>
     <Folder Include="Properties\" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Remove="FLMMIX.cs" />
-    <Compile Remove="TestDeploy.cs" />
   </ItemGroup>
 </Project>

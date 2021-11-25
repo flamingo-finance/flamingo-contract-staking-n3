@@ -13,18 +13,13 @@ namespace FLMStaking
             }
         }
 
-        private static bool CheckAddrVaild(params UInt160[] addrs)
+        static bool CheckAddrValid(bool checkZero, params UInt160[] addrs)
         {
-            bool vaild = true;
-
             foreach (UInt160 addr in addrs)
             {
-                vaild = vaild && addr is not null && addr.IsValid;
-                if (!vaild)
-                    break;
+                if (!addr.IsValid || (checkZero && addr.IsZero)) return false;
             }
-
-            return vaild;
+            return true;
         }
     }
 }
