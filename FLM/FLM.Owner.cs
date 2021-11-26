@@ -28,8 +28,8 @@ namespace flamingo_contract_staking
 
         public static bool SetOwner(UInt160 owner)
         {
-            Assert(Runtime.CheckWitness(GetOwner()), "SetOwner: CheckWitness failed, owner-".ToByteArray().Concat(owner).ToByteString());
-            Assert(CheckAddrValid(true, owner), "SetOwner: invalid owner-".ToByteArray().Concat(owner).ToByteString());
+            ExecutionEngine.Assert(Runtime.CheckWitness(GetOwner()), "SetOwner: CheckWitness failed, owner-".ToByteArray().Concat(owner).ToByteString());
+            ExecutionEngine.Assert(CheckAddrValid(true, owner), "SetOwner: invalid owner-".ToByteArray().Concat(owner).ToByteString());
             OwnerStorage.Put(owner);
             return true;
         }
@@ -55,9 +55,9 @@ namespace flamingo_contract_staking
 
         public static bool AddAuthor(UInt160 newAuthor)
         {
-            Assert(CheckAddrValid(true, newAuthor), "addAuthor: invalid newAuthor, newAuthor-".ToByteArray().Concat(newAuthor).ToByteString());
-            Assert(IsOwner() && newAuthor != GetOwner(), "addAuthor: CheckWitness failed, only owner can add other author");
-            Assert(!IsAuthor(newAuthor), "addAuthor: newAuthor-".ToByteArray().Concat(newAuthor).Concat(" is already a author".ToByteArray()).ToByteString());
+            ExecutionEngine.Assert(CheckAddrValid(true, newAuthor), "addAuthor: invalid newAuthor, newAuthor-".ToByteArray().Concat(newAuthor).ToByteString());
+            ExecutionEngine.Assert(IsOwner() && newAuthor != GetOwner(), "addAuthor: CheckWitness failed, only owner can add other author");
+            ExecutionEngine.Assert(!IsAuthor(newAuthor), "addAuthor: newAuthor-".ToByteArray().Concat(newAuthor).Concat(" is already a author".ToByteArray()).ToByteString());
             AuthorStorage.Put(newAuthor);
             OnAddAuthor(newAuthor);
             return true;
@@ -65,9 +65,9 @@ namespace flamingo_contract_staking
 
         public static bool RemoveAuthor(UInt160 author)
         {
-            Assert(CheckAddrValid(true, author), "removeAuthor: invalid author, author-".ToByteArray().Concat(author).ToByteString());
-            Assert(IsOwner() && author != GetOwner(), "removeAuthor: CheckWitness failed, only first pika can remove other author");
-            Assert(IsAuthor(author), "removeAuthor: author-".ToByteArray().Concat(author).Concat(" is not a author".ToByteArray()).ToByteString());
+            ExecutionEngine.Assert(CheckAddrValid(true, author), "removeAuthor: invalid author, author-".ToByteArray().Concat(author).ToByteString());
+            ExecutionEngine.Assert(IsOwner() && author != GetOwner(), "removeAuthor: CheckWitness failed, only first pika can remove other author");
+            ExecutionEngine.Assert(IsAuthor(author), "removeAuthor: author-".ToByteArray().Concat(author).Concat(" is not a author".ToByteArray()).ToByteString());
             AuthorStorage.Delete(author);
             OnRemoveAuthor(author);
             return true;
@@ -75,10 +75,10 @@ namespace flamingo_contract_staking
 
         public static bool Mint(UInt160 minter, UInt160 receiver, BigInteger amount)
         {
-            Assert(CheckAddrValid(true, minter, receiver), "approve: invalid minter or receiver, usr-".ToByteArray().Concat(minter).Concat("and receiver-".ToByteArray()).Concat(receiver).ToByteString());
-            Assert(amount >= 0, "mint:invalid amount-".ToByteArray().Concat(amount.ToByteArray()).ToByteString());
-            Assert(IsAuthor(minter), "mint: author-".ToByteArray().Concat(minter).Concat(" is not a real author".ToByteArray()).ToByteString());
-            Assert(Runtime.CheckWitness(minter) || minter.Equals(Runtime.CallingScriptHash), "mint: CheckWitness failed, author-".ToByteArray().Concat(minter).ToByteString());
+            ExecutionEngine.Assert(CheckAddrValid(true, minter, receiver), "approve: invalid minter or receiver, usr-".ToByteArray().Concat(minter).Concat("and receiver-".ToByteArray()).Concat(receiver).ToByteString());
+            ExecutionEngine.Assert(amount >= 0, "mint:invalid amount-".ToByteArray().Concat(amount.ToByteArray()).ToByteString());
+            ExecutionEngine.Assert(IsAuthor(minter), "mint: author-".ToByteArray().Concat(minter).Concat(" is not a real author".ToByteArray()).ToByteString());
+            ExecutionEngine.Assert(Runtime.CheckWitness(minter) || minter.Equals(Runtime.CallingScriptHash), "mint: CheckWitness failed, author-".ToByteArray().Concat(minter).ToByteString());
 
             amount = amount / ConvertDecimal;
             TransferInternal(UInt160.Zero, receiver, amount);
@@ -87,7 +87,7 @@ namespace flamingo_contract_staking
 
         public static void Update(ByteString nefFile, string manifest, object data)
         {
-            Assert(IsOwner(), "upgrade: Only allowed to be called by owner.");
+            ExecutionEngine.Assert(IsOwner(), "upgrade: Only allowed to be called by owner.");
             ContractManagement.Update(nefFile, manifest, data);
         }
     }

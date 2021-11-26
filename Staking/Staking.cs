@@ -29,10 +29,10 @@ namespace FLMStaking
         public static void OnNEP17Payment(UInt160 from, BigInteger amount, object data)
         {
             UInt160 asset = Runtime.CallingScriptHash;
-            Assert(!IsStakingPaused(), "OnNEP17Payment: IsStakingPaused");
-            Assert(IsInWhiteList(asset) && CheckAddrValid(true, from, asset) && !CheckWhetherSelf(from) && amount > 0, "OnNEP17Payment: invald params");
+            ExecutionEngine.Assert(!IsStakingPaused(), "OnNEP17Payment: IsStakingPaused");
+            ExecutionEngine.Assert(IsInWhiteList(asset) && CheckAddrValid(true, from, asset) && !CheckWhetherSelf(from) && amount > 0, "OnNEP17Payment: invald params");
             BigInteger currentTimeStamp = GetCurrentTimestamp();
-            Assert(CheckIfStakingStart(currentTimeStamp), "OnNEP17Payment: Timeout");
+            ExecutionEngine.Assert(CheckIfStakingStart(currentTimeStamp), "OnNEP17Payment: Timeout");
             BigInteger currentProfit = 0;
 
             UpdateStackRecord(asset, currentTimeStamp);
@@ -60,7 +60,7 @@ namespace FLMStaking
         public static bool Refund(UInt160 fromAddress, BigInteger amount, UInt160 asset)
         {
             //检查是否存在reentered的情况
-            Assert(EnteredStorage.Get() == 0, "Re-entered");
+            ExecutionEngine.Assert(EnteredStorage.Get() == 0, "Re-entered");
             EnteredStorage.Put(1);
 
             if (IsRefundPaused()) return false;
@@ -80,7 +80,7 @@ namespace FLMStaking
                 amount,
                 new byte[0]
             };
-            Assert((bool)Contract.Call(asset, "transfer", CallFlags.All, @params), "Refund: transfer failed, ".ToByteArray().ToByteString());
+            ExecutionEngine.Assert((bool)Contract.Call(asset, "transfer", CallFlags.All, @params), "Refund: transfer failed, ".ToByteArray().ToByteString());
 
             BigInteger remainAmount = (stakingRecord.amount - amount);
             UpdateStackRecord(asset, currentTimestamp);
@@ -94,9 +94,9 @@ namespace FLMStaking
         public static bool ClaimFLM(UInt160 fromAddress, UInt160 asset)
         {
             //检查是否存在reentered的情况
-            Assert(EnteredStorage.Get() == 0, "Re-entered");
+            ExecutionEngine.Assert(EnteredStorage.Get() == 0, "Re-entered");
             EnteredStorage.Put(1);
-            Assert(CheckAddrValid(true, fromAddress, asset), "ClaimFLM: invald params");
+            ExecutionEngine.Assert(CheckAddrValid(true, fromAddress, asset), "ClaimFLM: invald params");
             UInt160 selfAddress = Runtime.ExecutingScriptHash;
             if (IsPaused()) return false;
             if (!Runtime.CheckWitness(fromAddress)) return false;
@@ -112,7 +112,7 @@ namespace FLMStaking
             var profitAmount = stakingRecord.Profit + newProfit;
             if (profitAmount == 0) return true;
             UserStakingStorage.Put(fromAddress, stakingRecord.amount, stakingRecord.assetId, currentTimestamp, 0);
-            Assert(MintFLM(fromAddress, profitAmount, selfAddress), "ClaimFLM: mint failed");
+            ExecutionEngine.Assert(MintFLM(fromAddress, profitAmount, selfAddress), "ClaimFLM: mint failed");
             EnteredStorage.Put(0);
             return true;
         }
@@ -120,7 +120,7 @@ namespace FLMStaking
         [Safe]
         public static BigInteger CheckFLM(UInt160 fromAddress, UInt160 asset)
         {
-            Assert(CheckAddrValid(true, fromAddress, asset), "CheckFLM: invald params");
+            ExecutionEngine.Assert(CheckAddrValid(true, fromAddress, asset), "CheckFLM: invald params");
             StakingReocrd stakingRecord = UserStakingStorage.Get(fromAddress, asset);
             UpdateStackRecord(asset, GetCurrentTimestamp());
             BigInteger newProfit = SettleProfit(stakingRecord.timeStamp, stakingRecord.amount, asset);
@@ -131,7 +131,7 @@ namespace FLMStaking
         [Safe]
         public static BigInteger GetStakingAmount(UInt160 fromAddress, UInt160 asset)
         {
-            Assert(CheckAddrValid(true, fromAddress, asset), "GetStakingAmount: invald params");
+            ExecutionEngine.Assert(CheckAddrValid(true, fromAddress, asset), "GetStakingAmount: invald params");
             return UserStakingStorage.Get(fromAddress, asset).amount;
         }
 

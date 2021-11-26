@@ -20,26 +20,26 @@ namespace flamingo_contract_staking
         [Safe]
         public static BigInteger BalanceOf(UInt160 usr)
         {
-            Assert(CheckAddrValid(true, usr), "BalanceOf: invalid usr, usr-".ToByteArray().Concat(usr).ToByteString());
+            ExecutionEngine.Assert(CheckAddrValid(true, usr), "BalanceOf: invalid usr, usr-".ToByteArray().Concat(usr).ToByteString());
             return BalanceStorage.Get(usr);
         }
 
         public static bool Transfer(UInt160 from, UInt160 to, BigInteger amount, object data = null)
         {
-            Assert(CheckAddrValid(true, from, to), "transfer: invalid from or to, owner-".ToByteArray().Concat(from).Concat("and to-".ToByteArray()).Concat(to).ToByteString());
-            Assert(Runtime.CheckWitness(from) || from.Equals(Runtime.CallingScriptHash), "transfer: CheckWitness failed, from-".ToByteArray().Concat(from).ToByteString());
+            ExecutionEngine.Assert(CheckAddrValid(true, from, to), "transfer: invalid from or to, owner-".ToByteArray().Concat(from).Concat("and to-".ToByteArray()).Concat(to).ToByteString());
+            ExecutionEngine.Assert(Runtime.CheckWitness(from) || from.Equals(Runtime.CallingScriptHash), "transfer: CheckWitness failed, from-".ToByteArray().Concat(from).ToByteString());
             return TransferInternal(from, to, amount, data);
         }
 
         private static bool TransferInternal(UInt160 from, UInt160 to, BigInteger amount, object data = null)
         {
-            Assert(amount >= 0, "transferInternal: invalid amount-".ToByteArray().Concat(amount.ToByteArray()).ToByteString());
+            ExecutionEngine.Assert(amount >= 0, "transferInternal: invalid amount-".ToByteArray().Concat(amount.ToByteArray()).ToByteString());
 
             bool result = true;
             if (from != UInt160.Zero && amount != 0)
             {
                 result = BalanceStorage.Reduce(from, amount);
-                Assert(result, "transferInternal:invalid balance-".ToByteArray().Concat(amount.ToByteArray()).ToByteString());
+                ExecutionEngine.Assert(result, "transferInternal:invalid balance-".ToByteArray().Concat(amount.ToByteArray()).ToByteString());
             }
             else if (from == UInt160.Zero)
             { 

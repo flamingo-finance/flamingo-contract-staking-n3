@@ -17,7 +17,7 @@ namespace FLMStaking
 
         public static void Update(ByteString nefFile, string manifest, object data)
         {
-            Assert(Runtime.CheckWitness(GetOwner()), "SetOwner: CheckWitness failed, owner-".ToByteArray().Concat(GetOwner()).ToByteString());
+            ExecutionEngine.Assert(Runtime.CheckWitness(GetOwner()), "SetOwner: CheckWitness failed, owner-".ToByteArray().Concat(GetOwner()).ToByteString());
             ContractManagement.Update(nefFile, manifest, data);
             UpgradeEnd();
         }
@@ -25,7 +25,7 @@ namespace FLMStaking
         private static void UpgradeEnd()
         {
             var t = UpgradeTimeLockStorage.Get();
-            Assert(GetCurrentTimestamp()> t && t != 0, "UpgradeEnd: timelock wrong, t-".ToByteArray().Concat(t.ToByteArray()).ToByteString());
+            ExecutionEngine.Assert(GetCurrentTimestamp()> t && t != 0, "UpgradeEnd: timelock wrong, t-".ToByteArray().Concat(t.ToByteArray()).ToByteString());
             UpgradeTimeLockStorage.Put(0);
         }
     }

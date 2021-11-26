@@ -1,5 +1,6 @@
 ﻿using System.Numerics;
 using Neo;
+using Neo.SmartContract.Framework;
 using Neo.SmartContract.Framework.Attributes;
 using Neo.SmartContract.Framework.Services;
 
@@ -9,7 +10,7 @@ namespace FLMStaking
     {
         public static bool SetCurrentShareAmount(UInt160 assetId, BigInteger amount, UInt160 adminAddress)
         {
-            Assert(CheckAddrValid(true, assetId, adminAddress), "SetCurrentShareAmount: invald params");
+            ExecutionEngine.Assert(CheckAddrValid(true, assetId, adminAddress), "SetCurrentShareAmount: invald params");
             if (IsInWhiteList(assetId) && IsAuthor(adminAddress) && Runtime.CheckWitness(adminAddress))
             {
                 if (amount >= 0)
@@ -32,7 +33,7 @@ namespace FLMStaking
         [Safe]
         public static BigInteger GetCurrentShareAmount(UInt160 assetId)
         {
-            Assert(CheckAddrValid(true, assetId), "GetCurrentShareAmount: invald params");
+            ExecutionEngine.Assert(CheckAddrValid(true, assetId), "GetCurrentShareAmount: invald params");
             if (IsInWhiteList(assetId))
             {
                 return CurrentShareAmountStorage.Get(assetId);

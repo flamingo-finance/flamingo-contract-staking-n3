@@ -22,9 +22,9 @@ namespace FLMStaking
 
         public static bool SetFLMAddress(UInt160 flm, UInt160 author)
         {
-            Assert(Runtime.CheckWitness(author), "SetFLMAddress: CheckWitness failed, author-".ToByteArray().Concat(author).ToByteString());
-            Assert(IsAuthor(author), "SetFLMAddress: not author-".ToByteArray().Concat(author).ToByteString());
-            Assert(flm.IsValid, "SetFLMAddress: address valid-".ToByteArray().Concat(flm).ToByteString());
+            ExecutionEngine.Assert(Runtime.CheckWitness(author), "SetFLMAddress: CheckWitness failed, author-".ToByteArray().Concat(author).ToByteString());
+            ExecutionEngine.Assert(IsAuthor(author), "SetFLMAddress: not author-".ToByteArray().Concat(author).ToByteString());
+            ExecutionEngine.Assert(flm.IsValid, "SetFLMAddress: address valid-".ToByteArray().Concat(flm).ToByteString());
             FLMAddressStorage.Put(flm);
             return true;
         }
