@@ -14,9 +14,6 @@ namespace flamingo_contract_staking
         [DisplayName("Transfer")]
         public static event Action<UInt160, UInt160, BigInteger> OnTransfer;
 
-        [DisplayName("Approval")]
-        public static event Action<UInt160, UInt160, BigInteger> OnApprove;
-
         [Safe]
         public static BigInteger TotalSupply() => TotalSupplyStorage.Get();
 

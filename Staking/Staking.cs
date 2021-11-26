@@ -112,10 +112,7 @@ namespace FLMStaking
             var profitAmount = stakingRecord.Profit + newProfit;
             if (profitAmount == 0) return true;
             UserStakingStorage.Put(fromAddress, stakingRecord.amount, stakingRecord.assetId, currentTimestamp, 0);
-            if (!MintFLM(fromAddress, profitAmount, selfAddress))
-            {
-                throw new Exception();
-            }
+            Assert(MintFLM(fromAddress, profitAmount, selfAddress), "ClaimFLM: mint failed");
             EnteredStorage.Put(0);
             return true;
         }
