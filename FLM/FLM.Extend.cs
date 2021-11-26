@@ -9,10 +9,7 @@ namespace flamingo_contract_staking
     {
         private static void Assert(bool condition, string msg)
         {
-            if (!condition)
-            {
-                ExecutionEngine.Assert(false, msg);
-            }
+            ExecutionEngine.Assert(condition, msg);
         }
 
         static bool CheckAddrValid(bool checkZero, params UInt160[] addrs)
