@@ -7,19 +7,11 @@ namespace FLMStaking
 {
     partial class FLMStaking
     {
-        /// <summary>
-        /// params: message, extend data
-        /// </summary>
-        [DisplayName("Fault")]
-        public static event FaultEvent onFault;
-        public delegate void FaultEvent(string message, params object[] paras);
-
         private static void Assert(bool condition, string msg)
         {
             if (!condition)
             {
-                onFault(msg);
-                ExecutionEngine.Assert(false);
+                ExecutionEngine.Assert(false, msg);
             }
         }
 
