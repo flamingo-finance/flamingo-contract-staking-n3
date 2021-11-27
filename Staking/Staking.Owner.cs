@@ -20,16 +20,16 @@ namespace FLMStaking
 
         public static bool SetOwner(UInt160 owner)
         {
-            Assert(Runtime.CheckWitness(GetOwner()), "SetOwner: CheckWitness failed, owner-".ToByteArray().Concat(owner).ToByteString());
-            Assert(CheckAddrValid(true, owner), "SetOwner: invalid owner-".ToByteArray().Concat(owner).ToByteString());
+            ExecutionEngine.Assert(Runtime.CheckWitness(GetOwner()), "SetOwner: CheckWitness failed, owner-".ToByteArray().Concat(owner).ToByteString());
+            ExecutionEngine.Assert(CheckAddrValid(true, owner), "SetOwner: invalid owner-".ToByteArray().Concat(owner).ToByteString());
             OwnerStorage.Put(owner);
             return true;
         }
 
         public static bool AddAuthor(UInt160 author)
         {
-            Assert(Runtime.CheckWitness(GetOwner()), "AddAuthor: CheckWitness failed, owner-".ToByteArray().Concat(GetOwner()).ToByteString());
-            Assert(CheckAddrValid(true, author), "AddAuthor: invalid author-".ToByteArray().Concat(author).ToByteString());
+            ExecutionEngine.Assert(Runtime.CheckWitness(GetOwner()), "AddAuthor: CheckWitness failed, owner-".ToByteArray().Concat(GetOwner()).ToByteString());
+            ExecutionEngine.Assert(CheckAddrValid(true, author), "AddAuthor: invalid author-".ToByteArray().Concat(author).ToByteString());
             AuthorStorage.Put(author);
             return true;
         }
@@ -37,7 +37,7 @@ namespace FLMStaking
         [Safe]
         public static bool IsAuthor(UInt160 author)
         {
-            Assert(CheckAddrValid(true, author), "IsAuthor: invalid author-".ToByteArray().Concat(author).ToByteString());
+            ExecutionEngine.Assert(CheckAddrValid(true, author), "IsAuthor: invalid author-".ToByteArray().Concat(author).ToByteString());
             return AuthorStorage.Get(author);
         }
 
@@ -56,9 +56,9 @@ namespace FLMStaking
 
         public static bool RemoveAuthor(UInt160 author)
         {
-            Assert(Runtime.CheckWitness(GetOwner()), "RemoveAuthor: CheckWitness failed, owner-".ToByteArray().Concat(GetOwner()).ToByteString());
-            Assert(CheckAddrValid(true, author), "RemoveAuthor: invalid author-".ToByteArray().Concat(author).ToByteString());
-            Assert(AuthorStorage.Get(author), "RemoveAuthor: not author".ToByteArray().Concat(author).ToByteString());
+            ExecutionEngine.Assert(Runtime.CheckWitness(GetOwner()), "RemoveAuthor: CheckWitness failed, owner-".ToByteArray().Concat(GetOwner()).ToByteString());
+            ExecutionEngine.Assert(CheckAddrValid(true, author), "RemoveAuthor: invalid author-".ToByteArray().Concat(author).ToByteString());
+            ExecutionEngine.Assert(AuthorStorage.Get(author), "RemoveAuthor: not author".ToByteArray().Concat(author).ToByteString());
             AuthorStorage.Delete(author);
             return true;
         }

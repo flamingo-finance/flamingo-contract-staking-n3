@@ -11,7 +11,7 @@ namespace FLMStaking
         [Safe]
         public static bool IsInWhiteList(UInt160 asset)
         {
-            Assert(CheckAddrValid(true, asset), "IsInWhiteList: invald params");
+            ExecutionEngine.Assert(CheckAddrValid(true, asset), "IsInWhiteList: invald params");
             return AssetStorage.Get(asset);
         }
 
@@ -30,18 +30,18 @@ namespace FLMStaking
 
         public static bool AddAsset(UInt160 asset, UInt160 author)
         {
-            Assert(CheckAddrValid(true, asset, author), "AddAsset: invald params");
-            Assert(Runtime.CheckWitness(author), "AddAsset: CheckWitness failed, author-".ToByteArray().Concat(author).ToByteString());
-            Assert(IsAuthor(author), "AddAsset: not author-".ToByteArray().Concat(author).ToByteString());
+            ExecutionEngine.Assert(CheckAddrValid(true, asset, author), "AddAsset: invald params");
+            ExecutionEngine.Assert(Runtime.CheckWitness(author), "AddAsset: CheckWitness failed, author-".ToByteArray().Concat(author).ToByteString());
+            ExecutionEngine.Assert(IsAuthor(author), "AddAsset: not author-".ToByteArray().Concat(author).ToByteString());
             AssetStorage.Put(asset);
             return true;
         }
 
         public static bool RemoveAsset(UInt160 asset, UInt160 author)
         {
-            Assert(Runtime.CheckWitness(author), "RemoveAsset: CheckWitness failed, author-".ToByteArray().Concat(author).ToByteString());
-            Assert(IsAuthor(author), "RemoveAsset: not author-".ToByteArray().Concat(author).ToByteString());
-            Assert(IsInWhiteList(asset), "RemoveAsset: not whitelist-".ToByteArray().Concat(asset).ToByteString());
+            ExecutionEngine.Assert(Runtime.CheckWitness(author), "RemoveAsset: CheckWitness failed, author-".ToByteArray().Concat(author).ToByteString());
+            ExecutionEngine.Assert(IsAuthor(author), "RemoveAsset: not author-".ToByteArray().Concat(author).ToByteString());
+            ExecutionEngine.Assert(IsInWhiteList(asset), "RemoveAsset: not whitelist-".ToByteArray().Concat(asset).ToByteString());
             AssetStorage.Delete(asset);
             return true;
         }
