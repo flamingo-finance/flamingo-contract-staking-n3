@@ -59,9 +59,10 @@ namespace FLMStaking
 
         public static bool Refund(UInt160 fromAddress, BigInteger amount, UInt160 asset)
         {
+            Transaction tran = Runtime.ScriptContainer as Transaction;
             //检查是否存在reentered的情况
-            ExecutionEngine.Assert(EnteredStorage.Get() == 0, "Re-entered");
-            EnteredStorage.Put(1);
+            ExecutionEngine.Assert(EnteredStorage.Get(tran.Hash) == 0, "Re-entered");
+            EnteredStorage.Put(tran.Hash, 1);
 
             if (IsRefundPaused()) return false;
             //提现检查
@@ -87,15 +88,16 @@ namespace FLMStaking
             //收益结算
             BigInteger currentProfit = SettleProfit(stakingRecord.timeStamp, stakingRecord.amount, asset) + stakingRecord.Profit;
             UserStakingStorage.Put(fromAddress, remainAmount, asset, currentTimestamp, currentProfit);
-            EnteredStorage.Put(0);
+            EnteredStorage.Put(tran.Hash, 0);
             return true;
         }
 
         public static bool ClaimFLM(UInt160 fromAddress, UInt160 asset)
         {
+            Transaction tran = Runtime.ScriptContainer as Transaction;
             //检查是否存在reentered的情况
-            ExecutionEngine.Assert(EnteredStorage.Get() == 0, "Re-entered");
-            EnteredStorage.Put(1);
+            ExecutionEngine.Assert(EnteredStorage.Get(tran.Hash) == 0, "Re-entered");
+            EnteredStorage.Put(tran.Hash, 1);
             ExecutionEngine.Assert(CheckAddrValid(true, fromAddress, asset), "ClaimFLM: invald params");
             UInt160 selfAddress = Runtime.ExecutingScriptHash;
             if (IsPaused()) return false;
@@ -113,7 +115,7 @@ namespace FLMStaking
             if (profitAmount == 0) return true;
             UserStakingStorage.Put(fromAddress, stakingRecord.amount, stakingRecord.assetId, currentTimestamp, 0);
             ExecutionEngine.Assert(MintFLM(fromAddress, profitAmount, selfAddress), "ClaimFLM: mint failed");
-            EnteredStorage.Put(0);
+            EnteredStorage.Put(tran.Hash, 0);
             return true;
         }
 

@@ -12,11 +12,11 @@ namespace FLMStaking
         {
             public static readonly string mapName = "entered";
 
-            public static void Put(BigInteger value) => new StorageMap(Storage.CurrentContext, mapName).Put(mapName, value);
+            public static void Put(UInt256 txid, BigInteger value) => new StorageMap(Storage.CurrentContext, mapName).Put(txid, value);
 
-            public static BigInteger Get()
+            public static BigInteger Get(UInt256 txid)
             {
-                var value = new StorageMap(Storage.CurrentContext, mapName).Get(mapName);
+                var value = new StorageMap(Storage.CurrentContext, mapName).Get(txid);
                 return value is null ? 0 : (BigInteger)value;
             }
         }
