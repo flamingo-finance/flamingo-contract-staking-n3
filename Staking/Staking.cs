@@ -117,7 +117,6 @@ namespace FLMStaking
             return true;
         }
 
-        [Safe]
         public static BigInteger CheckFLM(UInt160 fromAddress, UInt160 asset)
         {
             ExecutionEngine.Assert(CheckAddrValid(true, fromAddress, asset), "CheckFLM: invald params");
