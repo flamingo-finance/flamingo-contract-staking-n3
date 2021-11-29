@@ -19,6 +19,12 @@ namespace FLMStaking
                 var value = new StorageMap(Storage.CurrentContext, mapName).Get(txid);
                 return value is null ? 0 : (BigInteger)value;
             }
+
+            public static void Delete(UInt256 txid)
+            {
+                var map = new StorageMap(Storage.CurrentContext, mapName);
+                map.Delete(txid);
+            }
         }
 
         public static class OwnerStorage
