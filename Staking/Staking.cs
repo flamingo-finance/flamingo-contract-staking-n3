@@ -61,8 +61,8 @@ namespace FLMStaking
         {
             Transaction tran = Runtime.ScriptContainer as Transaction;
             //检查是否存在reentered的情况
-            ExecutionEngine.Assert(EnteredStorage.Get(tran.Hash) == 0, "Re-entered");
-            EnteredStorage.Put(tran.Hash, 1);
+            ExecutionEngine.Assert(EnteredStorage.IsSet(tran.Hash), "Re-entered");
+            EnteredStorage.Set(tran.Hash);
 
             if (IsRefundPaused() || !Runtime.CheckWitness(fromAddress))
             {
@@ -99,8 +99,8 @@ namespace FLMStaking
         {
             Transaction tran = Runtime.ScriptContainer as Transaction;
             //检查是否存在reentered的情况
-            ExecutionEngine.Assert(EnteredStorage.Get(tran.Hash) == 0, "Re-entered");
-            EnteredStorage.Put(tran.Hash, 1);
+            ExecutionEngine.Assert(EnteredStorage.IsSet(tran.Hash), "Re-entered");
+            EnteredStorage.Set(tran.Hash);
             ExecutionEngine.Assert(CheckAddrValid(true, fromAddress, asset), "ClaimFLM: invald params");
             UInt160 selfAddress = Runtime.ExecutingScriptHash;
             var currentTimestamp = GetCurrentTimestamp();

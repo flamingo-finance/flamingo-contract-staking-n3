@@ -17,7 +17,7 @@ namespace FLMStaking
             public static bool IsSet(UInt256 txid)
             {
                 var value = new StorageMap(Storage.CurrentContext, mapName).Get(txid);
-                return value is null ? 0 : (BigInteger)value;
+                return value is not null;
             }
 
             public static void Delete(UInt256 txid)
