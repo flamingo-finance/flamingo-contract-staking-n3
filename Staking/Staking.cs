@@ -59,17 +59,21 @@ namespace FLMStaking
 
         public static bool Refund(UInt160 fromAddress, BigInteger amount, UInt160 asset)
         {
+            Transaction tran = Runtime.ScriptContainer as Transaction;
             //检查是否存在reentered的情况
-            ExecutionEngine.Assert(EnteredStorage.Get() == 0, "Re-entered");
-            EnteredStorage.Put(1);
+            ExecutionEngine.Assert(!EnteredStorage.IsSet(tran.Hash), "Re-entered");
+            EnteredStorage.Set(tran.Hash);
 
-            if (IsRefundPaused()) return false;
-            //提现检查
-            if (!Runtime.CheckWitness(fromAddress)) return false;
+            if (IsRefundPaused() || !Runtime.CheckWitness(fromAddress))
+            {
+                EnteredStorage.Delete(tran.Hash);
+                return false;
+            }
             BigInteger currentTimestamp = GetCurrentTimestamp();
             StakingReocrd stakingRecord = UserStakingStorage.Get(fromAddress, asset);
             if (stakingRecord.amount < amount || !(stakingRecord.fromAddress.Equals(fromAddress)) || !(stakingRecord.assetId.Equals(asset)))
             {
+                EnteredStorage.Delete(tran.Hash);
                 return false;
             }
             //Nep5转账
@@ -87,33 +91,39 @@ namespace FLMStaking
             //收益结算
             BigInteger currentProfit = SettleProfit(stakingRecord.timeStamp, stakingRecord.amount, asset) + stakingRecord.Profit;
             UserStakingStorage.Put(fromAddress, remainAmount, asset, currentTimestamp, currentProfit);
-            EnteredStorage.Put(0);
+            EnteredStorage.Delete(tran.Hash);
             return true;
         }
 
         public static bool ClaimFLM(UInt160 fromAddress, UInt160 asset)
         {
+            Transaction tran = Runtime.ScriptContainer as Transaction;
             //检查是否存在reentered的情况
-            ExecutionEngine.Assert(EnteredStorage.Get() == 0, "Re-entered");
-            EnteredStorage.Put(1);
+            ExecutionEngine.Assert(!EnteredStorage.IsSet(tran.Hash), "Re-entered");
+            EnteredStorage.Set(tran.Hash);
             ExecutionEngine.Assert(CheckAddrValid(true, fromAddress, asset), "ClaimFLM: invald params");
             UInt160 selfAddress = Runtime.ExecutingScriptHash;
-            if (IsPaused()) return false;
-            if (!Runtime.CheckWitness(fromAddress)) return false;
             var currentTimestamp = GetCurrentTimestamp();
-            if (!CheckIfRefundStart(currentTimestamp)) return false;
+            if (IsPaused() || !Runtime.CheckWitness(fromAddress) || !CheckIfRefundStart(currentTimestamp))
+            {
+                EnteredStorage.Delete(tran.Hash);
+                return false;
+            }
             StakingReocrd stakingRecord = UserStakingStorage.Get(fromAddress, asset);
             if (!stakingRecord.fromAddress.Equals(fromAddress))
             {
+                EnteredStorage.Delete(tran.Hash);
                 return false;
             }
             UpdateStackRecord(asset, currentTimestamp);
             BigInteger newProfit = SettleProfit(stakingRecord.timeStamp, stakingRecord.amount, asset);
             var profitAmount = stakingRecord.Profit + newProfit;
-            if (profitAmount == 0) return true;
-            UserStakingStorage.Put(fromAddress, stakingRecord.amount, stakingRecord.assetId, currentTimestamp, 0);
-            ExecutionEngine.Assert(MintFLM(fromAddress, profitAmount, selfAddress), "ClaimFLM: mint failed");
-            EnteredStorage.Put(0);
+            if (profitAmount != 0)
+            {
+                UserStakingStorage.Put(fromAddress, stakingRecord.amount, stakingRecord.assetId, currentTimestamp, 0);
+                ExecutionEngine.Assert(MintFLM(fromAddress, profitAmount, selfAddress), "ClaimFLM: mint failed");
+            }
+            EnteredStorage.Delete(tran.Hash);
             return true;
         }
 
