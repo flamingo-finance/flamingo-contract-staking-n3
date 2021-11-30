@@ -59,7 +59,7 @@ namespace FLMStaking
 
         public static bool Refund(UInt160 fromAddress, BigInteger amount, UInt160 asset)
         {
-            Transaction tran = Runtime.ScriptContainer as Transaction;
+            Transaction tran = (Transaction)Runtime.ScriptContainer;
             //检查是否存在reentered的情况
             ExecutionEngine.Assert(!EnteredStorage.IsSet(tran.Hash), "Re-entered");
             EnteredStorage.Set(tran.Hash);
@@ -97,7 +97,7 @@ namespace FLMStaking
 
         public static bool ClaimFLM(UInt160 fromAddress, UInt160 asset)
         {
-            Transaction tran = Runtime.ScriptContainer as Transaction;
+            Transaction tran = (Transaction)Runtime.ScriptContainer;
             //检查是否存在reentered的情况
             ExecutionEngine.Assert(!EnteredStorage.IsSet(tran.Hash), "Re-entered");
             EnteredStorage.Set(tran.Hash);
