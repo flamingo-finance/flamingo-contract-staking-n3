@@ -7,12 +7,20 @@ namespace flamingo_contract_staking
 {
     partial class FLM
     {
+        private static readonly byte[] TotalSupplyPrefix = new byte[] { 0x01, 0x00 };
+
+        private static readonly byte[] TotalSupplyKey = "totalSupply".ToByteArray();
+
+        private static readonly byte[] BalancePrefix = new byte[] { 0x01, 0x01 };
+
+        private static readonly byte[] AuthorPrefix = new byte[] { 0x01, 0x03 };
+
+        private static readonly byte[] ownerPrefix = new byte[] { 0x03, 0x02 };
+
+
+
         public static class TotalSupplyStorage
         {
-            private static readonly byte[] TotalSupplyPrefix = new byte[] { 0x01, 0x00 };
-
-            private static readonly byte[] TotalSupplyKey = "totalSupply".ToByteArray();
-
             internal static void Put(BigInteger amount)
             {
                 StorageMap balanceMap = new(Storage.CurrentContext, TotalSupplyPrefix);
@@ -32,8 +40,6 @@ namespace flamingo_contract_staking
 
         public static class BalanceStorage
         {
-            private static readonly byte[] BalancePrefix = new byte[] { 0x01, 0x01 };
-
             internal static void Put(UInt160 usr, BigInteger amount)
             {
                 StorageMap balanceMap = new(Storage.CurrentContext, BalancePrefix);
@@ -75,8 +81,6 @@ namespace flamingo_contract_staking
 
         public static class AuthorStorage
         {
-            private static readonly byte[] AuthorPrefix = new byte[] { 0x01, 0x03 };
-
             internal static void Put(UInt160 usr)
             {
                 StorageMap authorMap = new(Storage.CurrentContext, AuthorPrefix);
@@ -130,8 +134,6 @@ namespace flamingo_contract_staking
 
         public static class OwnerStorage
         {
-            private static readonly byte[] ownerPrefix = new byte[] { 0x03, 0x02 };
-
             internal static void Put(UInt160 usr)
             {
                 StorageMap map = new(Storage.CurrentContext, ownerPrefix);
