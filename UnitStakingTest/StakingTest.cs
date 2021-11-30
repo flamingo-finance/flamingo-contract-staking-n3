@@ -68,7 +68,7 @@ namespace UnitStakingTest
                 Header = new Header()
                 {
                     Index = 123,
-                    Timestamp = 3600 + 1601114400,
+                    Timestamp = 3600000 + 1601114400000,
                     Witness = new Witness()
                     {
                         InvocationScript = System.Array.Empty<byte>(),

@@ -125,14 +125,6 @@ namespace UnitFLMTest
             var stack = engine.ExecuteTestCaseStandard("decimals");
             Assert.AreEqual(stack.Pop().GetInteger(), 8);
         }
-
-        [TestMethod]
-        public void TestVerify()
-        {
-            engine.Reset();
-            var stack = engine.ExecuteTestCaseStandard("verify");
-            Assert.AreEqual(stack.Pop().GetBoolean(), true);
-        }
         #endregion
 
         #region flm.owner
@@ -180,12 +172,6 @@ namespace UnitFLMTest
             stack = engine.ExecuteTestCaseStandard("addAuthor", addr2);
             engine.Reset();
             stack = engine.ExecuteTestCaseStandard("getAllAuthor");
-
-            //engine.Reset();
-            //stack = engine.ExecuteTestCaseStandard("addAuthor", addr2);
-            //engine.Reset();
-            //stack = engine.ExecuteTestCaseStandard("getAuthorCount");
-            //Assert.AreEqual(stack.Pop().GetInteger(), 2);
         }
 
         [TestMethod]
@@ -225,8 +211,8 @@ namespace UnitFLMTest
 
             });
             string path = "../../../../FLM/";
-            string[] files = Directory.GetFiles(path, "*.cs");
-            engine.AddEntryScript(files);
+            string file = Directory.GetFiles(path, "*.csproj").FirstOrDefault();
+            engine.AddEntryScript_Project(file);
             stack = engine.ExecuteTestCaseStandard("isAuthor", addr1);
             Assert.AreEqual(stack.Pop().GetBoolean(), true);
 
@@ -276,8 +262,8 @@ namespace UnitFLMTest
 
             });
             string path = "../../../../FLM/";
-            string[] files = Directory.GetFiles(path, "*.cs");
-            engine.AddEntryScript(files);
+            string file = Directory.GetFiles(path, "*.csproj").FirstOrDefault();
+            engine.AddEntryScript_Project(file);
             stack = engine.ExecuteTestCaseStandard("isAuthor", addr1);
             Assert.AreEqual(stack.Pop().GetBoolean(), false);
         }
@@ -317,25 +303,6 @@ namespace UnitFLMTest
         }
 
         [TestMethod]
-        public void TestApprove()
-        {
-            engine.Reset();
-            var stack = engine.ExecuteTestCaseStandard("approve",owner,addr1,10086);
-            Assert.AreEqual(stack.Pop().GetBoolean(), true);
-        }
-
-        [TestMethod]
-        public void TestAllowance()
-        {
-            engine.Reset();
-            var stack = engine.ExecuteTestCaseStandard("approve", owner, addr1, 10086);
-
-            engine.Reset();
-            stack = engine.ExecuteTestCaseStandard("allowance", owner, addr1);
-            Assert.AreEqual(stack.Pop().GetInteger(), 10086);
-        }
-
-        [TestMethod]
         public void Transfer()
         {
             engine.Reset();
@@ -349,58 +316,6 @@ namespace UnitFLMTest
             stack = engine.ExecuteTestCaseStandard("balanceOf", addr1);
             Assert.AreEqual(stack.Pop().GetInteger(), 1);
         }
-
-        [TestMethod]
-        public void TransferFrom()
-        {
-            engine.Reset();
-            BigInteger mintAmount = BigInteger.Parse("1000000000000000000000000000000");
-            var stack = engine.ExecuteTestCaseStandard("mint", owner, owner, mintAmount);
-
-            engine.Reset();
-            stack = engine.ExecuteTestCaseStandard("approve", owner, addr1, 1);
-
-            engine.Reset();
-            engine = new TestEngine(TriggerType.Application, new DummyVerificable(new UInt160(addr1)), snapshot: engine.Snapshot, persistingBlock: new Block()
-            {
-                Header = new Header()
-                {
-                    Index = 123,
-                    Timestamp = 1234,
-                    Witness = new Witness()
-                    {
-                        InvocationScript = System.Array.Empty<byte>(),
-                        VerificationScript = System.Array.Empty<byte>()
-                    },
-                    NextConsensus = UInt160.Zero,
-                    MerkleRoot = UInt256.Zero,
-                    PrevHash = UInt256.Zero
-                },
-
-                Transactions = new Transaction[]
-    {
-                     new Transaction()
-                     {
-                          Attributes = System.Array.Empty<TransactionAttribute>(),
-                          Signers = new Signer[]{ new Signer() { Account = UInt160.Parse("bba58d0e5b015c8501a3a0e093d314d6f6b9fd69") } },
-                          Witnesses = System.Array.Empty<Witness>(),
-                          Script = System.Array.Empty<byte>()
-                     }
-    }
-
-            });
-            string path = "../../../../FLM/";
-            string[] files = Directory.GetFiles(path, "*.cs");
-            engine.AddEntryScript(files);
-            stack = engine.ExecuteTestCaseStandard("transferFrom", addr1, owner, addr2, 1, new byte[] { });
-
-            engine.Reset();
-            stack = engine.ExecuteTestCaseStandard("balanceOf",addr2);
-            Assert.AreEqual(stack.Pop().GetInteger(), 1);
-        }
         #endregion
-
-
-
     }
 }
