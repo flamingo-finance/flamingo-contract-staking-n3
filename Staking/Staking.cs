@@ -84,7 +84,16 @@ namespace FLMStaking
                 amount,
                 new byte[0]
             };
-            ExecutionEngine.Assert((bool)Contract.Call(asset, "transfer", CallFlags.All, @params), "Refund: transfer failed, ".ToByteArray().ToByteString());
+
+            try
+            {
+                var result = (bool)Contract.Call(asset, "transfer", CallFlags.All, @params);
+                ExecutionEngine.Assert(result, "Refund: transfer failed, ".ToByteArray().ToByteString());
+            }
+            catch (Exception)
+            {
+                ExecutionEngine.Assert(false, "Refund: transfer failed, ".ToByteArray().ToByteString());
+            }
 
             BigInteger remainAmount = (stakingRecord.amount - amount);
             UpdateStackRecord(asset, currentTimestamp);
