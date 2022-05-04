@@ -15,10 +15,10 @@ namespace FLMStaking
             return true;
         }
 
-        public static void Update(ByteString nefFile, string manifest, object data)
+        public static void Update(ByteString nefFile, string manifest)
         {
             ExecutionEngine.Assert(Runtime.CheckWitness(GetOwner()), "SetOwner: CheckWitness failed, owner-".ToByteArray().Concat(GetOwner()).ToByteString());
-            ContractManagement.Update(nefFile, manifest, data);
+            ContractManagement.Update(nefFile, manifest, null);
             UpgradeEnd();
         }
 
