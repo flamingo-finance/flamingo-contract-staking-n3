@@ -4,6 +4,7 @@ using Neo;
 using Neo.SmartContract;
 using Neo.SmartContract.Framework;
 using Neo.SmartContract.Framework.Attributes;
+using Neo.SmartContract.Framework.Services;
 
 namespace flamingo_contract_staking
 {
@@ -28,5 +29,12 @@ namespace flamingo_contract_staking
 
         [Safe]
         public static byte Decimals() => 8;
+
+        public static void Burn(UInt160 user, BigInteger amount)
+        {
+            ExecutionEngine.Assert(Runtime.CheckWitness(user), "Permission Invaid");
+
+            TransferInternal(user, UInt160.Zero, amount);
+        }
     }
 }
