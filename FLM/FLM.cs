@@ -30,11 +30,11 @@ namespace flamingo_contract_staking
         [Safe]
         public static byte Decimals() => 8;
 
-        public static void Burn(UInt160 user, BigInteger amount)
+        public static bool Burn(UInt160 user, BigInteger amount)
         {
             ExecutionEngine.Assert(Runtime.CheckWitness(user), "Permission Invaid");
-
-            TransferInternal(user, UInt160.Zero, amount);
+ 
+            return TransferInternal(user, UInt160.Zero, amount);
         }
     }
 }
