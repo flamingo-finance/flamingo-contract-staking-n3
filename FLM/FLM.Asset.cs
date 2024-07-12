@@ -35,16 +35,17 @@ namespace flamingo_contract_staking
         {
             ExecutionEngine.Assert(amount >= 0, "transferInternal: invalid amount-".ToByteArray().Concat(amount.ToByteArray()).ToByteString());
 
-            bool result = true;
             if (from != UInt160.Zero && amount != 0)
             {
-                result = BalanceStorage.Reduce(from, amount);
-                ExecutionEngine.Assert(result, "transferInternal:invalid balance-".ToByteArray().Concat(amount.ToByteArray()).ToByteString());
+                if (!BalanceStorage.Reduce(from, amount))
+                    return false;
             }
             else if (from == UInt160.Zero)
             { 
                 TotalSupplyStorage.Increase(amount);
             }
+
+
             if (to != UInt160.Zero && amount != 0)
             {
                 BalanceStorage.Increase(to, amount);
@@ -58,11 +59,8 @@ namespace flamingo_contract_staking
             if (ContractManagement.GetContract(to) != null)
                 Contract.Call(to, "onNEP17Payment", CallFlags.All, new object[] { from, amount, data });
 
-            if (result)
-            {
-                OnTransfer(from, to, amount);
-            }
-            return result;
+            OnTransfer(from, to, amount);
+            return true;
         }
     }
 }
